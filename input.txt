@@ -1,0 +1,32 @@
+// Sample input for the mini-compiler
+// Tests all language features
+
+int x;
+float y;
+int result;
+
+x = 10;
+y = 3.14;
+
+/* Arithmetic and assignment */
+result = x + 5;
+result = result * 2;
+
+/* Control flow */
+if (x > 5) then begin
+    result = result + 1;
+end
+
+/* While loop */
+int i;
+i = 0;
+while (i < 3) begin
+    i = i + 1;
+    result = result + i;
+end
+
+/* Function-like block */
+float z;
+z = y + 2.0;
+
+return result;

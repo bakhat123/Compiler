@@ -1,0 +1,17 @@
+# Show lexer tokenizing
+./lexer_only < input.txt > /tmp/tokens.txt
+
+# Show calculators working
+echo "2+3*4" | ./infix_calc          # Should: 14
+echo "^2 3" | ./prefix_calc          # Should: 8
+
+# Show full pipeline with debug
+./compiler --debug < input.txt > /tmp/pipeline.txt 2>&1
+
+# Show semantic errors
+echo "int x; y = 5;" | ./compiler   # Should error: undeclared y
+
+# Generate LLVM IR and compare
+clang llvm/test1.c -S -emit-llvm -O0 -o /tmp/test1_unopt.ll
+clang llvm/test1.c -S -emit-llvm -O3 -o /tmp/test1_opt.ll
+diff /tmp/test1_unopt.ll /tmp/test1_opt.ll
