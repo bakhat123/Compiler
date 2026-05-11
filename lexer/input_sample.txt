@@ -1,0 +1,68 @@
+// ===== Module 1 Lexer Test Input =====
+// This file covers all token types for the extended lexer.
+
+// --- Keywords ---
+int x;
+float y;
+if (x == 0) then begin
+    return x;
+end
+
+while (x != 10) begin
+    x = x + 1;
+end
+
+procedure myProc;
+function myFunc;
+
+// --- Integer and Float literals ---
+42
+3.14159
+0
+100.0
+
+// --- Identifiers ---
+counter
+_hidden
+myVar2
+total_sum
+
+// --- Operators ---
+x + y
+x - y
+x * y
+x / y
+x ^ y
+x = 10
+x == y
+x != y
+
+// --- Comparison operators ---
+x < y
+x > y
+x <= y
+x >= y
+
+// --- Delimiters ---
+( ) { } ; ,
+
+// --- Built-in functions ---
+log(2.718)
+exp(1.0)
+
+/* Multi-line comment:
+   This should be
+   completely ignored
+   by the lexer */
+
+// --- Else keyword ---
+if (x > 0) then begin
+    y = 1.0;
+end
+else begin
+    y = 0.0;
+end
+
+// --- Error character (for testing) ---
+@
+#

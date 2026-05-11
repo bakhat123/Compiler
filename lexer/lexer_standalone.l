@@ -38,7 +38,7 @@ IDENTIFIER  {LETTER}({LETTER}|{DIGIT})*
 
 {FLOAT}     { printf("[Line %2d]  FLOAT_LIT     : %s\n", line_num, yytext); }
 {INTEGER}   { printf("[Line %2d]  INT_LIT       : %s\n", line_num, yytext); }
-{IDENTIFIER}{ printf("[Line %2d]  IDENTIFIER    : %s\n", line_num, yytext); }
+{IDENTIFIER} { printf("[Line %2d]  IDENTIFIER    : %s\n", line_num, yytext); }
 
 "+"  { printf("[Line %2d]  OP_PLUS       : +\n",  line_num); }
 "-"  { printf("[Line %2d]  OP_MINUS      : -\n",  line_num); }

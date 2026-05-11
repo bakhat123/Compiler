@@ -24,15 +24,12 @@ static int count_instrs(TACInstr *h) {
 
 /* Simulate "executing" the IR (counting instructions as a proxy for time) */
 static double simulate_exec(TACInstr *h) {
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts);
+    clock_t start = clock();
     volatile long sum = 0;
     for (TACInstr *p = h; p; p = p->next)
         for (int i = 0; i < 10000; i++) sum += i;
-    struct timespec te;
-    clock_gettime(CLOCK_MONOTONIC, &te);
-    double ms = (te.tv_sec - ts.tv_sec)*1000.0 +
-                (te.tv_nsec - ts.tv_nsec)/1e6;
+    clock_t end = clock();
+    double ms = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;
     (void)sum;
     return ms;
 }

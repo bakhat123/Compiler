@@ -12,8 +12,9 @@ LDFLAGS = -lfl -lm
 # ──────────────────────────────────────────────────────────
 # Default target: full integrated compiler
 # ──────────────────────────────────────────────────────────
-all: compiler lexer_only postfix_calc prefix_calc infix_calc extended_calc \
-     first_follow_bin semantic_bin llvm_tests
+all: compiler lexer_only lexer_basic postfix_eval \
+     postfix_calc prefix_calc infix_calc extended_calc \
+     first_follow_bin semantic_bin test_type test_scope llvm_tests
 
 # ──────────────────────────────────────────────────────────
 # Full pipeline binary
@@ -74,28 +75,39 @@ optimizer/optimizer.o: optimizer/optimizer.c
 # ──────────────────────────────────────────────────────────
 # Module 1: Standalone lexer (token stream only)
 # ──────────────────────────────────────────────────────────
-lexer_only: lexer/lexer_standalone.c
+lexer_only: lexer/lexer_standalone.l
 	@echo "Building standalone lexer..."
 	$(FLEX) -o lexer/lex_standalone.yy.c lexer/lexer_standalone.l
 	$(CC) $(CFLAGS) -o lexer_only lexer/lex_standalone.yy.c -lfl
+
+# Module 1 Task 1.1: Basic Lexer
+lexer_basic: lexer/lexer_basic.l
+	@echo "Building basic lexer..."
+	$(FLEX) -o lexer/lexer_basic.yy.c lexer/lexer_basic.l
+	$(CC) $(CFLAGS) -o lexer_basic lexer/lexer_basic.yy.c -lfl
+
+# Module 1 Task 1.2: Postfix Evaluator
+postfix_eval: lexer/postfix_eval.c
+	@echo "Building postfix evaluator..."
+	$(CC) $(CFLAGS) -o postfix_eval lexer/postfix_eval.c
 
 # ──────────────────────────────────────────────────────────
 # Module 2: Three calculator parsers
 # ──────────────────────────────────────────────────────────
 postfix_calc: parser/postfix.y parser/calc_lex.l
 	$(BISON) -d -o parser/postfix.tab.c parser/postfix.y
-	$(FLEX) -o parser/calc_lex.yy.c parser/calc_lex.l
-	$(CC) $(CFLAGS) -o postfix_calc parser/postfix.tab.c parser/calc_lex.yy.c $(LDFLAGS)
+	$(FLEX) -o parser/calc_lex_post.yy.c parser/calc_lex.l
+	$(CC) $(CFLAGS) -DPOSTFIX_CALC -Iparser -o postfix_calc parser/postfix.tab.c parser/calc_lex_post.yy.c $(LDFLAGS)
 
 prefix_calc: parser/prefix.y parser/calc_lex.l
 	$(BISON) -d -o parser/prefix.tab.c parser/prefix.y
-	$(FLEX) -o parser/calc_lex2.yy.c parser/calc_lex.l
-	$(CC) $(CFLAGS) -o prefix_calc parser/prefix.tab.c parser/calc_lex2.yy.c $(LDFLAGS)
+	$(FLEX) -o parser/calc_lex_pre.yy.c parser/calc_lex.l
+	$(CC) $(CFLAGS) -DPREFIX_CALC -Iparser -o prefix_calc parser/prefix.tab.c parser/calc_lex_pre.yy.c $(LDFLAGS)
 
 infix_calc: parser/infix.y parser/calc_lex.l
 	$(BISON) -d -o parser/infix.tab.c parser/infix.y
-	$(FLEX) -o parser/calc_lex3.yy.c parser/calc_lex.l
-	$(CC) $(CFLAGS) -o infix_calc parser/infix.tab.c parser/calc_lex3.yy.c $(LDFLAGS)
+	$(FLEX) -o parser/calc_lex_inf.yy.c parser/calc_lex.l
+	$(CC) $(CFLAGS) -Iparser -o infix_calc parser/infix.tab.c parser/calc_lex_inf.yy.c $(LDFLAGS)
 
 # ──────────────────────────────────────────────────────────
 # Module 3: Extended calculator (log, exp, ^)
@@ -103,7 +115,7 @@ infix_calc: parser/infix.y parser/calc_lex.l
 extended_calc: parser/extended.y parser/extended_lex.l
 	$(BISON) -d -o parser/extended.tab.c parser/extended.y
 	$(FLEX) -o parser/extended.yy.c parser/extended_lex.l
-	$(CC) $(CFLAGS) -o extended_calc parser/extended.tab.c parser/extended.yy.c $(LDFLAGS)
+	$(CC) $(CFLAGS) -Iparser -o extended_calc parser/extended.tab.c parser/extended.yy.c $(LDFLAGS)
 
 # ──────────────────────────────────────────────────────────
 # Module 4: First / Follow / LL(1) table (standalone)
@@ -119,6 +131,15 @@ first_follow_bin: first_follow/first.c first_follow/follow.c first_follow/ll1_ta
 semantic_bin: semantic/symbol_table.c semantic/type_checker.c semantic/scope_checker.c
 	$(CC) $(CFLAGS) -o semantic_demo \
 	    semantic/scope_checker.c semantic/symbol_table.c semantic/type_checker.c
+
+# Module 5 Task 5.4: Test programs
+test_type: semantic/test_type_error.c semantic/symbol_table.c semantic/type_checker.c
+	$(CC) $(CFLAGS) -o test_type \
+	    semantic/test_type_error.c semantic/symbol_table.c semantic/type_checker.c
+
+test_scope: semantic/test_scope_error.c semantic/symbol_table.c semantic/type_checker.c
+	$(CC) $(CFLAGS) -o test_scope \
+	    semantic/test_scope_error.c semantic/symbol_table.c semantic/type_checker.c
 
 # ──────────────────────────────────────────────────────────
 # Module 8: LLVM test programs
@@ -155,9 +176,10 @@ clean:
 	rm -f parser/*.tab.c parser/*.tab.h parser/*.yy.c
 	rm -f lexer/*.yy.c
 	rm -f semantic/*.o ir/*.o optimizer/*.o
-	rm -f compiler lexer_only postfix_calc prefix_calc infix_calc extended_calc
+	rm -f compiler lexer_only lexer_basic postfix_eval
+	rm -f postfix_calc prefix_calc infix_calc extended_calc
 	rm -f first_follow/first first_follow/follow first_follow/ll1
-	rm -f semantic_demo
+	rm -f semantic_demo test_type test_scope
 	rm -f llvm/test1 llvm/test2
 
 .PHONY: all clean debug llvm_ir llvm_tests

@@ -1,0 +1,45 @@
+# Build artifacts & generated files
+*.o
+*.exe
+*.out
+
+# Flex/Bison generated
+lex.yy.c
+*.yy.c
+*.tab.c
+*.tab.h
+parser.tab.c
+parser.tab.h
+
+# Compiled binaries
+compiler
+lexer_only
+lexer_basic
+postfix_eval
+postfix_calc
+prefix_calc
+infix_calc
+extended_calc
+semantic_demo
+test_type
+test_scope
+
+# Subdirectory binaries
+first_follow/first
+first_follow/follow
+first_follow/ll1
+llvm/test1
+llvm/test2
+
+# LLVM IR output
+llvm/*.ll
+llvm/*.bc
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/

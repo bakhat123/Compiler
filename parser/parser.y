@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "../semantic/symbol_table.h"
-#include "../ir/ir_gen.h"
-#include "../optimizer/optimizer.h"
+#include "semantic/symbol_table.h"
+#include "ir/ir_gen.h"
+#include "optimizer/optimizer.h"
 
 extern int yylex(void);
 extern int line_num;
